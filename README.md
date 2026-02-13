@@ -1,59 +1,143 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# OrderHub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+OrderHub is a lightweight order management API built with Laravel. It provides product and customer management, order creation with stock validation, and basic reporting-friendly pagination. The API is intentionally minimal and designed to be extended.
 
-## About Laravel
+**Key Features**
+- Products CRUD with prefix search and pagination
+- Customers CRUD with pagination
+- Orders creation with stock checks and automatic totals
+- Order line items stored with unit price and line totals
+- SQLite-friendly tests and GitHub Actions CI
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Tech Stack**
+- PHP 8.2+ / Laravel 12
+- Vite + Tailwind CSS for the frontend build pipeline
+- SQLite (tests) or any Laravel-supported database (development/production)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Requirements**
+- PHP 8.2+
+- Composer
+- Node.js 20+
+- A database supported by Laravel (MySQL/Postgres/SQLite)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Setup**
+1. `composer install`
+2. `cp .env.example .env`
+3. `php artisan key:generate`
+4. Update `.env` with your database credentials
+5. `php artisan migrate`
 
-## Learning Laravel
+**Seeding (Important)**
+The default `DatabaseSeeder` is intentionally large. It creates:
+- 3,000,000 products
+- 1,000 customers
+- 3,000,000 demo orders with items
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+If you do not want a large dataset, run a specific seeder instead of `db:seed`, or reduce the counts in the seeders before running them.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Examples:
+- `php artisan db:seed --class=CustomerSeeder`
+- `php artisan db:seed --class=ProductSeeder`
+- `php artisan db:seed --class=DemoOrderSeeder`
 
-## Laravel Sponsors
+**Run Locally**
+- `composer dev` (runs Laravel server, queue, logs, and Vite)
+- `php artisan serve` (server only)
+- `npm run dev` (Vite only)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Testing**
+- `composer test`
 
-### Premium Partners
+Tests use SQLite in-memory by default (see `phpunit.xml`).
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**API**
+Base path: `/api`
 
-## Contributing
+| Resource | Method | Endpoint | Notes |
+| --- | --- | --- | --- |
+| Products | GET | `/products` | Paginated. Supports `?search=prefix` on `name`. |
+| Products | POST | `/products` | Creates product. |
+| Products | GET | `/products/{id}` | Returns a single product. |
+| Products | PUT/PATCH | `/products/{id}` | Updates a product. |
+| Products | DELETE | `/products/{id}` | Deletes a product. |
+| Customers | GET | `/customers` | Paginated. |
+| Customers | POST | `/customers` | Creates a customer. |
+| Customers | GET | `/customers/{id}` | Returns a single customer. |
+| Customers | PUT/PATCH | `/customers/{id}` | Updates a customer. |
+| Customers | DELETE | `/customers/{id}` | Deletes a customer. |
+| Orders | GET | `/orders` | Paginated with `customer` and `items.product` loaded. |
+| Orders | POST | `/orders` | Creates an order and adjusts stock. |
+| Orders | GET | `/orders/{id}` | Returns a single order with relations. |
+| Orders | PUT/PATCH | `/orders/{id}` | Returns `501 Not Implemented`. |
+| Orders | DELETE | `/orders/{id}` | Returns `405 Not Allowed`. |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Product Fields**
+- `name` (string, required)
+- `sku` (string, required, unique)
+- `price` (integer, required, smallest currency unit)
+- `stock_qty` (integer, optional, defaults to 0)
 
-## Code of Conduct
+**Customer Fields**
+- `name` (string, required)
+- `email` (string, optional, unique)
+- `phone` (string, optional)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Order Create Payload**
+```json
+{
+  "customer_id": 1,
+  "items": [
+    { "product_id": 10, "qty": 2 },
+    { "product_id": 12, "qty": 1 }
+  ]
+}
+```
 
-## Security Vulnerabilities
+**Order Behavior**
+- Validates product existence and available stock.
+- Uses the current product price for line totals.
+- Decrements product `stock_qty` on successful creation.
+- Stores totals as unsigned integers (smallest currency unit).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Pagination Response (Products)**
+The products index endpoint returns a simple JSON structure:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Example",
+      "sku": "EX-001",
+      "price": 100,
+      "stock_qty": 5
+    }
+  ],
+  "links": {
+    "first": "...",
+    "last": "...",
+    "prev": null,
+    "next": "..."
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 3,
+    "path": "...",
+    "per_page": 20,
+    "to": 20,
+    "total": 50
+  }
+}
+```
+
+**CI (GitHub Actions)**
+- `CI` workflow runs tests, Pint lint, and PHPStan analysis on push and PRs.
+- `Security` workflow runs Composer and NPM audits weekly and on demand.
+
+**Notes**
+- The order update and delete endpoints are placeholders.
+- Authentication is not enabled for API routes by default.
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
