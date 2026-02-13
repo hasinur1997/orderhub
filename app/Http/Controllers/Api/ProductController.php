@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Product;
-
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -19,7 +18,7 @@ class ProductController extends Controller
         $search = trim((string) $request->query('search', ''));
 
         $query = Product::query()
-            ->select(['id','name','sku','price','stock_qty']);
+            ->select(['id', 'name', 'sku', 'price', 'stock_qty']);
 
         if ($search !== '') {
             // Prefer prefix for speed (index-friendly)
@@ -54,20 +53,19 @@ class ProductController extends Controller
     /**
      * Create a new product.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         // TODO: replace with FormRequest validation
-        $product = Product::create($request->only(['name','sku','price','stock_qty']));
+        $product = Product::create($request->only(['name', 'sku', 'price', 'stock_qty']));
+
         return response()->json($product, 201);
     }
 
     /**
      * Show a single product.
      *
-     * @param  \App\Models\Product  $product
      * @return \App\Models\Product
      */
     public function show(Product $product)
@@ -78,26 +76,25 @@ class ProductController extends Controller
     /**
      * Update a product.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
      * @return \App\Models\Product
      */
     public function update(Request $request, Product $product)
     {
         // TODO: replace with FormRequest validation
-        $product->update($request->only(['name','sku','price','stock_qty']));
+        $product->update($request->only(['name', 'sku', 'price', 'stock_qty']));
+
         return $product;
     }
 
     /**
      * Delete a product.
      *
-     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function destroy(Product $product)
     {
         $product->delete();
+
         return response()->noContent();
     }
 }

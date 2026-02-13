@@ -23,9 +23,9 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'customer_id' => ['required', 'integer', 'exists:customers,id'],
-            'items'       => ['required', 'array', 'min:1'],
+            'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
-            'items.*.qty'        => ['required', 'integer', 'min:1', 'max:1000'],
+            'items.*.qty' => ['required', 'integer', 'min:1', 'max:1000'],
         ];
     }
 
@@ -38,7 +38,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'items.required' => 'Order items are required.',
-            'items.min'      => 'At least one item is required.',
+            'items.min' => 'At least one item is required.',
         ];
     }
 }

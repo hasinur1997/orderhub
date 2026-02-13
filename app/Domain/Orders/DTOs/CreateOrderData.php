@@ -7,8 +7,7 @@ class CreateOrderData
     /**
      * Create a DTO for a new order payload.
      *
-     * @param int $customerId
-     * @param array<int, array{product_id:int, qty:int}> $items
+     * @param  array<int, array{product_id:int, qty:int}>  $items
      */
     public function __construct(
         public int $customerId,
@@ -21,7 +20,7 @@ class CreateOrderData
      *
      * Expected shape: ['customer_id' => int|string, 'items' => array<int, array{product_id:int, qty:int}>]
      *
-     * @param array{customer_id:int|string, items:array<int, array{product_id:int, qty:int}>} $data
+     * @param  array{customer_id:int|string, items:array<int, array{product_id:int, qty:int}>}  $data
      */
     public static function fromArray(array $data): self
     {

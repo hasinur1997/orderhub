@@ -12,12 +12,12 @@ class OrderPricingService
      * Each item must include a numeric `product_id` and `qty`. Returns an array
      * containing the subtotal and per-line pricing details.
      *
-     * @param array<int, array{product_id:int|string, qty:int|string}> $items
+     * @param  array<int, array{product_id:int|string, qty:int|string}>  $items
      * @return array{subtotal:int, lines:array<int, array{product_id:int, qty:int, unit_price:int, line_total:int}>}
      */
     public function calculate(array $items): array
     {
-        $productIds = array_map(fn($i) => (int)$i['product_id'], $items);
+        $productIds = array_map(fn ($i) => (int) $i['product_id'], $items);
 
         $products = Product::query()
             ->whereIn('id', $productIds)
@@ -28,8 +28,8 @@ class OrderPricingService
         $lines = [];
 
         foreach ($items as $item) {
-            $pid = (int)$item['product_id'];
-            $qty = (int)$item['qty'];
+            $pid = (int) $item['product_id'];
+            $qty = (int) $item['qty'];
 
             /** @var Product $product */
             $product = $products->get($pid);

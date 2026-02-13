@@ -15,7 +15,7 @@ class CreateOrderAction
     /**
      * Create a new action instance.
      *
-     * @param OrderPricingService $pricingService Computes current pricing for order lines.
+     * @param  OrderPricingService  $pricingService  Computes current pricing for order lines.
      */
     public function __construct(
         private readonly OrderPricingService $pricingService
@@ -24,7 +24,7 @@ class CreateOrderAction
     /**
      * Create an order, validate stock, and persist items in a single transaction.
      *
-     * @param CreateOrderData $data Input customer and item payload.
+     * @param  CreateOrderData  $data  Input customer and item payload.
      * @return Order The persisted order with customer and item relations loaded.
      *
      * @throws ValidationException When a product is missing or stock is insufficient.
@@ -33,7 +33,7 @@ class CreateOrderAction
     {
         return DB::transaction(function () use ($data) {
             // Lock products to prevent race conditions on stock updates
-            $productIds = array_map(fn($i) => (int)$i['product_id'], $data->items);
+            $productIds = array_map(fn ($i) => (int) $i['product_id'], $data->items);
 
             $products = Product::query()
                 ->whereIn('id', $productIds)
@@ -43,11 +43,11 @@ class CreateOrderAction
 
             // Validate stock
             foreach ($data->items as $item) {
-                $pid = (int)$item['product_id'];
-                $qty = (int)$item['qty'];
+                $pid = (int) $item['product_id'];
+                $qty = (int) $item['qty'];
 
                 $product = $products->get($pid);
-                if (!$product) {
+                if (! $product) {
                     throw ValidationException::withMessages([
                         'items' => ["Product {$pid} not found."],
                     ]);

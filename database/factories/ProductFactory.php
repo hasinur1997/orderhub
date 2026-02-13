@@ -29,7 +29,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->unique()->words(2, true);
-        $sku = strtoupper(Str::slug($name)) . '-' . $this->faker->unique()->numberBetween(100, 999);
+        $sku = strtoupper(Str::slug($name)).'-'.$this->faker->unique()->numberBetween(100, 999);
 
         return [
             'name' => Str::title($name),

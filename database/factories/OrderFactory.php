@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Order;
 use App\Models\Customer;
+use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +19,7 @@ class OrderFactory extends Factory
      * @var string
      */
     protected $model = Order::class;
-    
+
     /**
      * Define default attribute values for new Order model instances.
      *
@@ -37,11 +37,9 @@ class OrderFactory extends Factory
 
     /**
      * Indicate that the order is cancelled.
-     *
-     * @return \Database\Factories\OrderFactory
      */
     public function cancelled(): self
     {
-        return $this->state(fn() => ['status' => 'cancelled']);
+        return $this->state(fn () => ['status' => 'cancelled']);
     }
 }

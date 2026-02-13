@@ -9,14 +9,11 @@ use Illuminate\Support\Str;
 
 /**
  * Class ProductSeeder
- * @package Database\Seeders
  */
 class ProductSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -43,7 +40,7 @@ class ProductSeeder extends Seeder
 
                 $rows[] = [
                     'name' => $name,
-                    'sku' => 'SKU-' . strtoupper(Str::random(12)), // large space
+                    'sku' => 'SKU-'.strtoupper(Str::random(12)), // large space
                     'price' => $faker->numberBetween(50, 5000),
                     'stock_qty' => $faker->numberBetween(0, 500),
                     'created_at' => $now,
@@ -56,4 +53,3 @@ class ProductSeeder extends Seeder
         }
     }
 }
-

@@ -11,19 +11,16 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Class DemoOrderSeeder
- * @package Database\Seeders
  */
 class DemoOrderSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
         $customers = Customer::query()->inRandomOrder()->take(10)->get();
-        $products  = Product::query()->inRandomOrder()->take(20)->get();
+        $products = Product::query()->inRandomOrder()->take(20)->get();
 
         if ($customers->isEmpty() || $products->isEmpty()) {
             return;
@@ -47,7 +44,7 @@ class DemoOrderSeeder extends Seeder
 
                 foreach ($picked as $product) {
                     // keep qty within available stock
-                    $maxQty = max(1, min(5, (int)$product->stock_qty));
+                    $maxQty = max(1, min(5, (int) $product->stock_qty));
                     $qty = rand(1, $maxQty);
 
                     // if stock is empty, skip
@@ -55,7 +52,7 @@ class DemoOrderSeeder extends Seeder
                         continue;
                     }
 
-                    $unit = (int)$product->price;
+                    $unit = (int) $product->price;
                     $line = $unit * $qty;
 
                     OrderItem::create([
